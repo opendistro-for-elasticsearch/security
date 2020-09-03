@@ -398,13 +398,6 @@ fi
 #    echo "discovery.zen.minimum_master_nodes: 1" | $SUDO_CMD tee -a "$ES_CONF_FILE" > /dev/null
 #fi
 
-#node.max_local_storage_nodes
-if $SUDO_CMD grep --quiet -i "^node.max_local_storage_nodes" "$ES_CONF_FILE"; then
-	: #already present
-else
-    echo 'node.max_local_storage_nodes: 3' | $SUDO_CMD tee -a "$ES_CONF_FILE" > /dev/null
-fi
-
 
 
 echo "######## End OpenDistro for Elasticsearch Security Demo Configuration ########" | $SUDO_CMD tee -a "$ES_CONF_FILE" > /dev/null 
