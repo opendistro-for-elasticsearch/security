@@ -305,8 +305,8 @@ public final class OpenDistroSecurityPlugin extends OpenDistroSecuritySSLPlugin 
 
         log.info("Clustername: {}", settings.get("cluster.name","elasticsearch"));
 
-        if (!transportSSLEnabled && !sslOnly) {
-            throw new IllegalStateException(SSLConfigConstants.OPENDISTRO_SECURITY_SSL_TRANSPORT_ENABLED+" must be set to 'true'");
+        if (!transportSSLEnabled && sslOnly) {
+            throw new IllegalStateException(SSLConfigConstants.OPENDISTRO_SECURITY_SSL_TRANSPORT_ENABLED+" must be set to 'true' to use SSLOnly mode.");
         }
 
         dlsFlsAvailable = !client && advancedModulesEnabled;
