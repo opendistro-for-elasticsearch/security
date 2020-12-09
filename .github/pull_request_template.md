@@ -1,6 +1,6 @@
 
 ##  opendistro-for-elasticsearch/security pull request intake form
-_Please provide as much details as possible to get your PR address quickly_
+_Please provide as much details as possible to get your PR to be address quickly_
 
  
  1. __Github Issue # or roaddmap entry, if available:__
