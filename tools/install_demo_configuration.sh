@@ -1,6 +1,7 @@
 #!/bin/bash
 #install_demo_configuration.sh [-y]
 
+PLUGIN_NAME="opendistro-security"
 SCRIPT_PATH="${BASH_SOURCE[0]}"
 if ! [ -x "$(command -v realpath)" ]; then
     if [ -L "$SCRIPT_PATH" ]; then
@@ -165,7 +166,7 @@ fi
 ES_CONF_DIR=$(dirname "${ES_CONF_FILE}")
 ES_CONF_DIR=`cd "$ES_CONF_DIR" ; pwd`
 
-if [ ! -d "$ES_PLUGINS_DIR/opendistro_security" ]; then
+if [ ! -d "$ES_PLUGINS_DIR/$PLUGIN_NAME" ]; then
   echo "Open Distro Security plugin not installed. Quit."
   exit -1
 fi
@@ -173,8 +174,8 @@ fi
 ES_VERSION=("$ES_LIB_PATH/elasticsearch-*.jar")
 ES_VERSION=$(echo $ES_VERSION | sed 's/.*elasticsearch-\(.*\)\.jar/\1/')
 
-SECURITY_VERSION=("$ES_PLUGINS_DIR/opendistro_security/opendistro_security-*.jar")
-SECURITY_VERSION=$(echo $SECURITY_VERSION | sed 's/.*opendistro_security-\(.*\)\.jar/\1/')
+SECURITY_VERSION=("$ES_PLUGINS_DIR/$PLUGIN_NAME/$PLUGIN_NAME-*.jar")
+SECURITY_VERSION=$(echo $SECURITY_VERSION | sed 's/.*$PLUGIN_NAME-\(.*\)\.jar/\1/')
 
 OS=$(sb_release -ds 2>/dev/null || cat /etc/*release 2>/dev/null | head -n1 || uname -om)
 echo "Elasticsearch install type: $ES_INSTALL_TYPE on $OS"
@@ -404,7 +405,7 @@ fi
 
 echo "######## End OpenDistro for Elasticsearch Security Demo Configuration ########" | $SUDO_CMD tee -a "$ES_CONF_FILE" > /dev/null 
 
-$SUDO_CMD chmod +x "$ES_PLUGINS_DIR/opendistro_security/tools/securityadmin.sh"
+$SUDO_CMD chmod +x "$ES_PLUGINS_DIR/$PLUGIN_NAME/tools/securityadmin.sh"
 
 ES_PLUGINS_DIR=`cd "$ES_PLUGINS_DIR" ; pwd`
 
@@ -412,7 +413,7 @@ echo "### Success"
 echo "### Execute this script now on all your nodes and then start all nodes"
 #Generate securityadmin_demo.sh
 echo "#!/bin/bash" | $SUDO_CMD tee securityadmin_demo.sh > /dev/null 
-echo $SUDO_CMD \""$ES_PLUGINS_DIR/opendistro_security/tools/securityadmin.sh"\" -cd \""$ES_PLUGINS_DIR/opendistro_security/securityconfig"\" -icl -key \""$ES_CONF_DIR/kirk-key.pem"\" -cert \""$ES_CONF_DIR/kirk.pem"\" -cacert \""$ES_CONF_DIR/root-ca.pem"\" -nhnv | $SUDO_CMD tee -a securityadmin_demo.sh > /dev/null
+echo $SUDO_CMD \""$ES_PLUGINS_DIR/$PLUGIN_NAME/tools/securityadmin.sh"\" -cd \""$ES_PLUGINS_DIR/$PLUGIN_NAME/securityconfig"\" -icl -key \""$ES_CONF_DIR/kirk-key.pem"\" -cert \""$ES_CONF_DIR/kirk.pem"\" -cacert \""$ES_CONF_DIR/root-ca.pem"\" -nhnv | $SUDO_CMD tee -a securityadmin_demo.sh > /dev/null
 $SUDO_CMD chmod +x securityadmin_demo.sh
 
 if [ "$initsecurity" == 0 ]; then
