@@ -20,6 +20,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Arrays;
 
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
@@ -53,12 +54,14 @@ public abstract class AbstractHTTPJwtAuthenticator implements HTTPAuthenticator 
     private final String jwtUrlParameter;
     private final String subjectKey;
     private final String rolesKey;
+    private final Object[] audiences;
 
     public AbstractHTTPJwtAuthenticator(Settings settings, Path configPath) {
         jwtUrlParameter = settings.get("jwt_url_parameter");
         jwtHeaderName = settings.get("jwt_header", "Authorization");
         rolesKey = settings.get("roles_key");
         subjectKey = settings.get("subject_key");
+        audiences = settings.getAsList("audiences").toArray();
 
         try {
             this.keyProvider = this.initKeyProvider(settings, configPath);
@@ -119,6 +122,26 @@ public abstract class AbstractHTTPJwtAuthenticator implements HTTPAuthenticator 
         }
 
         final String[] roles = extractRoles(claims);
+
+        /* if the audiences key is set, ensure that the JWT contains at least one audience
+        present in the audiences list */
+        if (audiences.length >0) {
+            final Object[] jwt_audiences = claims.getAudiences().toArray();
+
+            boolean audienceValid = false;
+
+            for (int i = 0; i < jwt_audiences.length; i++) {
+                if (Arrays.asList(audiences).contains(jwt_audiences[i].toString())) {
+                    audienceValid = true;
+                    break;
+                }
+            }
+
+            if (!audienceValid) {
+                log.error("JWT did not contain a valid audience");
+                return null;
+            }
+        }
 
         final AuthCredentials ac = new AuthCredentials(subject, roles).markComplete();
 
